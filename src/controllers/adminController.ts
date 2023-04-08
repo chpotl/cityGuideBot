@@ -22,9 +22,8 @@ export async function getAllRoutes(chatId: number, bot: TelegramBot) {
 export async function getAllSpots(
 	chatId: number,
 	bot: TelegramBot,
-	message: string
+	routeId: string
 ) {
-	const routeId = message.match(/\/listspots(.*)/)![1];
 	const route = await Route.findById(routeId);
 	let res = '';
 	res += `<b>Маршрут ${route!.name}</b>\n\n`;
@@ -78,24 +77,45 @@ export async function editRoute(
 	message: string,
 	id: string
 ) {
-	const arr = message.split('\n');
-	const res: {
-		name: string | undefined;
-		theme: string | undefined;
-		description: string | undefined;
-	} = {
-		name: undefined,
-		theme: undefined,
-		description: undefined,
-	};
-	arr.forEach((el) => {
-		if (el.includes('name: ')) {
-			res.name = el.match(/name: (.*)/)![1];
-		} else if (el.includes('theme: ')) {
-			res.theme = el.match(/theme: (.*)/)![1];
-		} else if (el.includes('description: ')) {
-			res.description = el.match(/description: (.*)/)![1];
+	try {
+		const arr = message.split('\n');
+		const res: {
+			name: string | undefined;
+			theme: string | undefined;
+			description: string | undefined;
+		} = {
+			name: undefined,
+			theme: undefined,
+			description: undefined,
+		};
+		arr.forEach((el) => {
+			if (el.includes('name: ')) {
+				res.name = el.match(/name: (.*)/)![1];
+			} else if (el.includes('theme: ')) {
+				res.theme = el.match(/theme: (.*)/)![1];
+			} else if (el.includes('description: ')) {
+				res.description = el.match(/description: (.*)/)![1];
+			}
+		});
+		const newRoute = await Route.findOneAndUpdate({ _id: id }, res);
+		console.log(res);
+		if (newRoute) {
+			bot.sendMessage(
+				chatId,
+				`Маршрут успешно изменен\n\nЗатронуты поля:\n${
+					res.name ? 'name: ' + res.name + '\n' : ''
+				}${res.theme ? 'theme: ' + res.theme + '\n' : ''}${
+					res.description ? 'description: ' + res.description + '\n' : ''
+				}
+        `,
+				{
+					reply_markup: adminKeyboard,
+				}
+			);
 		}
-	});
-	await Route.findOneAndUpdate({ _id: id }, res);
+		redisClient.del(chatId.toString());
+	} catch (e) {
+		//@ts-ignore
+		bot.sendMessage(chatId, 'ERROR\n\n' + e._message.toString());
+	}
 }

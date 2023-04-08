@@ -29,7 +29,6 @@ export async function router(
 				chatId,
 				`${state}\n${theme}\n${routeName}\n${pointIndex}\n`
 			);
-			pointsController(chatId, bot);
 			break;
 		case '/start':
 			startController(chatId, bot, msg);

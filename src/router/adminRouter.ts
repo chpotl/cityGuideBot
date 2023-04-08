@@ -16,7 +16,7 @@ export async function adminRouter(
 ) {
 	// redisClient.hSet(chatId.toString(), 'adminState', adminState.);
 	const state = await redisClient.hGet(chatId.toString(), 'adminState');
-	if (msg.text == 'Вывести все маршруты') {
+	if (msg.text == 'Вывести/Редактировать маршруты') {
 		getAllRoutes(chatId, bot);
 		return;
 	} else if (msg.text == 'Создать маршрут') {
@@ -37,19 +37,24 @@ export async function adminRouter(
 		);
 		return;
 	} else if (msg.text?.match(/^\/listspots/)) {
-		getAllSpots(chatId, bot, msg.text);
+		const routeId = msg.text?.match(/\/listspots(.*)/)![1];
+		getAllSpots(chatId, bot, routeId);
 		return;
 	} else if (msg.text?.match(/^\/editroute/)) {
-		await redisClient.hSet(
-			chatId.toString(),
-			'adminState',
-			adminState.edit_route
-		);
+		const routeId = msg.text?.match(/\/editroute(.*)/)![1];
+		await redisClient
+			.multi()
+			.hSet(chatId.toString(), 'adminState', adminState.edit_route)
+			.hSet(chatId.toString(), 'routeId', routeId)
+			.exec();
 		bot.sendMessage(
 			chatId,
 			'Чтобы изменить информацию о маршруте введите название поля (name, theme, description) и его значение через двоеточие и пробел. Каждое значение с новой строки\n\n<i><u>Например:</u></i>\nname: Московский джаз\ndescription: какое-то новое описание без переноса строки',
 			{
 				parse_mode: 'HTML',
+				reply_markup: {
+					remove_keyboard: true,
+				},
 			}
 		);
 		return;
@@ -59,7 +64,8 @@ export async function adminRouter(
 			createRoute(chatId, bot, msg.text!);
 			break;
 		case adminState.edit_route:
-			editRoute(chatId, bot, msg.text!, '643181f87d009ae066eadb82');
+			const routeId = await redisClient.hGet(chatId.toString(), 'routeId');
+			editRoute(chatId, bot, msg.text!, routeId!);
 		default:
 			break;
 	}

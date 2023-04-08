@@ -10,11 +10,9 @@ export const themeKeyboard = {
 
 export const adminKeyboard = {
 	keyboard: [
-		[{ text: 'Вывести все маршруты' }],
+		[{ text: 'Вывести/Редактировать маршруты' }],
 		[{ text: 'Создать маршрут' }],
-		[{ text: 'Изменить маршрут' }],
 		[{ text: 'Создать току' }],
-		[{ text: 'Изменить току' }],
 	],
 	resize_keyboard: true,
 };
