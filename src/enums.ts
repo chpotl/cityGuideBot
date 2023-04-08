@@ -1,5 +1,5 @@
 export enum userState {
-	district = 'district',
+	theme = 'theme',
 	route = 'route',
 	walking = 'walking',
 	waiting_location = 'location',

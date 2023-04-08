@@ -5,14 +5,14 @@ import Route from '../models/routeModel';
 import { themeKeyboard } from '../view/keyboard';
 import { getPoint } from './walkController';
 
-export function gettheme(chatId: number, bot: TelegramBot) {
-	redisClient.hSet(chatId.toString(), 'state', userState.district);
-	bot.sendMessage(chatId, 'Выбери район для прогулки', {
+export function getTheme(chatId: number, bot: TelegramBot) {
+	redisClient.hSet(chatId.toString(), 'state', userState.theme);
+	bot.sendMessage(chatId, 'Выбери тематику маршрута', {
 		reply_markup: themeKeyboard,
 	});
 }
 
-export async function setDistrict(
+export async function setTheme(
 	chatId: number,
 	bot: TelegramBot,
 	message: string
@@ -33,10 +33,10 @@ export async function setDistrict(
 		redisClient
 			.multi()
 			.hSet(chatId.toString(), 'state', userState.route)
-			.hSet(chatId.toString(), 'district', message)
+			.hSet(chatId.toString(), 'theme', message)
 			.exec();
 	} else {
-		bot.sendMessage(chatId, 'Я пока не знаю такого района');
+		bot.sendMessage(chatId, 'Я пока не знаю такой тематики');
 	}
 }
 
@@ -56,6 +56,6 @@ export async function setRoute(
 			.exec();
 		getPoint(chatId, bot, message);
 	} else {
-		bot.sendMessage(chatId, 'Я пока не знаю такогой маршрут 777');
+		bot.sendMessage(chatId, 'Я пока не знаю такого маршрут');
 	}
 }

@@ -1,5 +1,5 @@
 import TelegramApi from 'node-telegram-bot-api';
-import { gettheme } from '../controllers/guideController';
+import { getTheme } from '../controllers/guideController';
 import { redisClient } from '../app';
 import { startController } from '../controllers/startController';
 import { userState } from '../enums';
@@ -12,10 +12,10 @@ export async function router(
 	chatId: number,
 	bot: TelegramApi
 ) {
-	const [state, district, routeName, pointIndex] = await redisClient
+	const [state, theme, routeName, pointIndex] = await redisClient
 		.multi()
 		.hGet(chatId.toString(), 'state')
-		.hGet(chatId.toString(), 'district')
+		.hGet(chatId.toString(), 'theme')
 		.hGet(chatId.toString(), 'routeName')
 		.hGet(chatId.toString(), 'pointIndex')
 		.exec();
@@ -24,15 +24,15 @@ export async function router(
 		case '/state':
 			bot.sendMessage(
 				chatId,
-				`${state}\n${district}\n${routeName}\n${pointIndex}\n`
+				`${state}\n${theme}\n${routeName}\n${pointIndex}\n`
 			);
 			pointsController(chatId, bot);
 			break;
 		case '/start':
 			startController(chatId, bot, msg);
 			break;
-		case 'Показать районы':
-			gettheme(chatId, bot);
+		case 'Выбрать маршрут':
+			getTheme(chatId, bot);
 			break;
 		case 'Мои баллы':
 			pointsController(chatId, bot);

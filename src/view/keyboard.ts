@@ -1,5 +1,5 @@
 export const startKeyboard = {
-	keyboard: [[{ text: 'Показать районы' }], [{ text: 'Мои баллы' }]],
+	keyboard: [[{ text: 'Выбрать маршрут' }], [{ text: 'Мои баллы' }]],
 };
 
 export const themeKeyboard = {

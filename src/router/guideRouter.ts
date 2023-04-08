@@ -1,5 +1,5 @@
 import TelegramApi from 'node-telegram-bot-api';
-import { setDistrict, setRoute } from '../controllers/guideController';
+import { setTheme, setRoute } from '../controllers/guideController';
 import { redisClient } from '../app';
 import { userState } from '../enums';
 import {
@@ -12,17 +12,17 @@ export async function guideRouter(
 	chatId: number,
 	bot: TelegramApi
 ) {
-	const [state, district, routeName, pointIndex] = await redisClient
+	const [state, theme, routeName, pointIndex] = await redisClient
 		.multi()
 		.hGet(chatId.toString(), 'state')
-		.hGet(chatId.toString(), 'district')
+		.hGet(chatId.toString(), 'theme')
 		.hGet(chatId.toString(), 'routeName')
 		.hGet(chatId.toString(), 'pointIndex')
 		.exec();
-	console.log(state, district, routeName, pointIndex);
+	console.log(state, theme, routeName, pointIndex);
 	switch (state) {
-		case userState.district:
-			setDistrict(chatId, bot, msg.text!);
+		case userState.theme:
+			setTheme(chatId, bot, msg.text!);
 			break;
 		case userState.route:
 			setRoute(chatId, bot, msg.text!);
