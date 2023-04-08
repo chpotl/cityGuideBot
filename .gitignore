@@ -1,0 +1,5 @@
+.env
+node_modules
+dump.rdb
+*.mp3
+*.png

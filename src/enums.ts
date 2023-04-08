@@ -1,0 +1,8 @@
+export enum userState {
+	district = 'district',
+	route = 'route',
+	walking = 'walking',
+	waiting_location = 'location',
+	waiting_info = 'info',
+	waiting_answer = 'answer',
+}
