@@ -6,12 +6,10 @@ const routeSchema = new mongoose.Schema({
 		required: [true, 'tour must have name'],
 		unique: true,
 	},
-	theme: [
-		{
-			type: String,
-			required: true,
-		},
-	],
+	theme: {
+		type: String,
+		required: true,
+	},
 	description: {
 		type: String,
 		trim: true,

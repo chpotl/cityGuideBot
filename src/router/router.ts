@@ -6,6 +6,8 @@ import { userState } from '../enums';
 import { pointsController } from '../controllers/pointsController';
 import { guideRouter } from './guideRouter';
 import TelegramBot from 'node-telegram-bot-api';
+import User from '../models/userModel';
+import { adminRouter } from './adminRouter';
 export async function router(
 	msg: TelegramBot.Message,
 	message: string,
@@ -19,6 +21,7 @@ export async function router(
 		.hGet(chatId.toString(), 'routeName')
 		.hGet(chatId.toString(), 'pointIndex')
 		.exec();
+	const user = await User.findOne({ chatId: msg.chat.id });
 
 	switch (message) {
 		case '/state':
@@ -40,5 +43,9 @@ export async function router(
 		default:
 			guideRouter(msg, chatId, bot);
 			break;
+	}
+	if (user?.role == 'admin') {
+		adminRouter(msg, chatId, bot);
+		return;
 	}
 }

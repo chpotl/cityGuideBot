@@ -25,8 +25,10 @@ export async function setTheme(
 	// console.log(routes);
 	if (routes.length) {
 		routes.forEach((el) => {
-			//@ts-ignore
-			routesKeyboard.keyboard.push([{ text: `${el.name}` }]);
+			if (el.spots.length > 0) {
+				//@ts-ignore
+				routesKeyboard.keyboard.push([{ text: `${el.name}` }]);
+			}
 		});
 		bot.sendMessage(chatId, 'Выбери интересующий маршрут', {
 			reply_markup: routesKeyboard,

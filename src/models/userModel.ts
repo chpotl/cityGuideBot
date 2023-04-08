@@ -6,6 +6,11 @@ const userSchema = new mongoose.Schema({
 		required: [true, 'tour must have name'],
 		unique: true,
 	},
+	role: {
+		type: String,
+		enum: ['admin', 'user'],
+		default: 'user',
+	},
 	first_name: {
 		type: String,
 	},
