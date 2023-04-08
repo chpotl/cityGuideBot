@@ -19,6 +19,7 @@ export async function setTheme(
 ) {
 	let routesKeyboard = {
 		keyboard: [],
+		resize_keyboard: true,
 	};
 	const routes = await Route.find({ theme: message });
 	// console.log(routes);

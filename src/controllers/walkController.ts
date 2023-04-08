@@ -23,6 +23,7 @@ export async function getPoint(
 			{
 				reply_markup: {
 					keyboard: [[{ text: 'Я на месте', request_location: true }]],
+					resize_keyboard: true,
 				},
 			}
 		);
