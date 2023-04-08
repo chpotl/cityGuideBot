@@ -8,11 +8,9 @@ const userSchema = new mongoose.Schema({
 	},
 	first_name: {
 		type: String,
-		required: true,
 	},
 	username: {
 		type: String,
-		required: true,
 	},
 	score: {
 		type: Number,
