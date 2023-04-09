@@ -9,6 +9,10 @@ import Spot from '../models/spotModel';
 
 export async function getAllRoutes(chatId: number, bot: TelegramBot) {
 	const routes = await Route.find();
+	if (!routes.length) {
+		bot.sendMessage(chatId, 'Пока ты не создал ни одного маршрута');
+		return;
+	}
 	let message = '';
 	routes.forEach(async (route, routeIndex) => {
 		message += `<b><u>Маршрут №${routeIndex + 1}</u></b>\n`;
@@ -29,8 +33,8 @@ export async function getAllSpots(
 	routeId: string
 ) {
 	const route = await Route.findById(routeId).populate('spots');
-	if (!route) {
-		bot.sendMessage(chatId, 'Пока ты не создал ни одного маршрута');
+	if (!route?.spots.length) {
+		bot.sendMessage(chatId, 'Пока ты не создал ни одной точки');
 		return;
 	}
 	let res = '';
@@ -76,7 +80,10 @@ export async function createRoute(
 		redisClient.del(chatId.toString());
 	} catch (e) {
 		//@ts-ignore
-		bot.sendMessage(chatId, 'ERROR\n\n' + e._message.toString());
+		bot.sendMessage(
+			chatId,
+			'ERROR\n' + e._message.toString() + '\n\nПопробуй еще раз'
+		);
 	}
 }
 
@@ -125,7 +132,10 @@ export async function editRoute(
 		redisClient.del(chatId.toString());
 	} catch (e) {
 		//@ts-ignore
-		bot.sendMessage(chatId, 'ERROR\n\n' + e._message.toString());
+		bot.sendMessage(
+			chatId,
+			'ERROR\n' + e._message.toString() + '\n\nПопробуй еще раз'
+		);
 	}
 }
 
@@ -198,7 +208,10 @@ export async function editSpotContent(
 		redisClient.del(chatId.toString());
 	} catch (e) {
 		//@ts-ignore
-		bot.sendMessage(chatId, 'ERROR\n\n' + e._message.toString());
+		bot.sendMessage(
+			chatId,
+			'ERROR\n' + e._message.toString() + '\n\nПопробуй еще раз'
+		);
 	}
 }
 
@@ -236,6 +249,9 @@ export async function createSpotContent(
 		redisClient.del(chatId.toString());
 	} catch (e) {
 		//@ts-ignore
-		bot.sendMessage(chatId, 'ERROR\n\n' + e._message.toString());
+		bot.sendMessage(
+			chatId,
+			'ERROR\n' + e._message.toString() + '\n\nПопробуй еще раз'
+		);
 	}
 }

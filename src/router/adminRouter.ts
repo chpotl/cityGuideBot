@@ -10,6 +10,7 @@ import {
 } from '../controllers/adminController';
 import { adminState } from '../enums';
 import Route from '../models/routeModel';
+import Spot from '../models/spotModel';
 
 export async function adminRouter(
 	msg: TelegramApi.Message,
@@ -88,7 +89,7 @@ export async function adminRouter(
 			.exec();
 		bot.sendMessage(
 			chatId,
-			'Чтобы создать точку на маршруте введите значения полей (название, описание, широта, долгота, вопрос, ответ, количество очков, сслыка на точку) каждое с новой строки\n\n<i><u>Например:</u></i>\nЛенинградский рок\ncубкультура\nКакое-то описание\n',
+			'Чтобы создать точку на маршруте введите значения полей (название, описание, широта, долгота, вопрос, ответ, количество очков, сслыка на точку) каждое с новой строки\n\n<i><u>Например:</u></i>\nЛенинградский Рок клуб\nКакое-то описание точки\n59.929407\n30.343949\nЗимой и летом одним цветом?\nелка\n10\nhttps://yandex.ru/maps/-/CCUWyBUj~A',
 			{
 				parse_mode: 'HTML',
 				reply_markup: {
@@ -96,6 +97,31 @@ export async function adminRouter(
 				},
 			}
 		);
+		return;
+	} else if (msg.text?.match(/^\/deleteroute/)) {
+		const routeId = msg.text?.match(/\/deleteroute(.*)/)![1];
+		const route = await Route.findById(routeId);
+		if (!route) {
+			bot.sendMessage(chatId, 'Такого маршрута не сущетсвует');
+			return;
+		}
+		await Spot.remove({ _id: { $in: route.spots } });
+		await Route.remove({ _id: routeId });
+		bot.sendMessage(chatId, 'Маршрут и все его точки успешно удалены', {
+			parse_mode: 'HTML',
+		});
+		return;
+	} else if (msg.text?.match(/^\/deletespot/)) {
+		const spotId = msg.text?.match(/\/deletespot(.*)/)![1];
+		const spot = await Spot.findById(spotId);
+		if (!spot) {
+			bot.sendMessage(chatId, 'Такой точки не сущетсвует');
+			return;
+		}
+		await Spot.remove({ _id: spotId });
+		bot.sendMessage(chatId, 'Точка успешно удалена', {
+			parse_mode: 'HTML',
+		});
 		return;
 	}
 	switch (state) {
