@@ -21,8 +21,8 @@ export async function setTheme(
 		keyboard: [],
 		resize_keyboard: true,
 	};
+	console.log('хуй');
 	const routes = await Route.find({ theme: message });
-	// console.log(routes);
 	if (routes.length) {
 		routes.forEach((el) => {
 			if (el.spots.length > 0) {

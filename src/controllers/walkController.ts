@@ -43,7 +43,7 @@ export async function checkLocation(
 	const pointIndex = parseInt(
 		(await redisClient.hGet(chatId.toString(), 'pointIndex'))!
 	);
-	const route = await Route.findOne({ name: routeName }).polygon('spots');
+	const route = await Route.findOne({ name: routeName }).populate('spots');
 	if (!route) {
 		bot.sendMessage(chatId, 'ERROR');
 		return;
@@ -69,7 +69,7 @@ async function getPointInfo(chatId: number, bot: TelegramBot, routeName: any) {
 	const pointIndex = parseInt(
 		(await redisClient.hGet(chatId.toString(), 'pointIndex'))!
 	);
-	const route = await Route.findOne({ name: routeName });
+	const route = await Route.findOne({ name: routeName }).populate('spots');
 	if (route) {
 		// console.log(route.spots[pointIndex].audioUrl);
 		if (route.spots[pointIndex].audioUrl) {
@@ -116,7 +116,7 @@ export async function checkAnswer(
 	const pointIndex = parseInt(
 		(await redisClient.hGet(chatId.toString(), 'pointIndex'))!
 	);
-	const route = await Route.findOne({ name: routeName });
+	const route = await Route.findOne({ name: routeName }).populate('spots');
 	if (!route) {
 		bot.sendMessage(chatId, 'ERROR');
 		return;
