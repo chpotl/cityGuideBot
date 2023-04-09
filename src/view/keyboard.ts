@@ -12,7 +12,6 @@ export const adminKeyboard = {
 	keyboard: [
 		[{ text: 'Вывести/Редактировать маршруты' }],
 		[{ text: 'Создать маршрут' }],
-		[{ text: 'Создать току' }],
 	],
 	resize_keyboard: true,
 };

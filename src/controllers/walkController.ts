@@ -1,3 +1,4 @@
+//@ts-nocheck
 import TelegramBot from 'node-telegram-bot-api';
 import { redisClient } from '../app';
 import { userState } from '../enums';
@@ -6,7 +7,6 @@ import User from '../models/userModel';
 import { themeKeyboard, startKeyboard } from '../view/keyboard';
 import { distanceBetweenEarthCoordinates } from '../utils/distanceBetweenEarthCoordinates';
 import { startController } from './startController';
-
 export async function getPoint(
 	chatId: number,
 	bot: TelegramBot,
@@ -15,7 +15,7 @@ export async function getPoint(
 	const pointIndex = parseInt(
 		(await redisClient.hGet(chatId.toString(), 'pointIndex'))!
 	);
-	const route = await Route.findOne({ name: routeName });
+	const route = await Route.findOne({ name: routeName }).populate('spots');
 	if (route) {
 		bot.sendMessage(
 			chatId,
@@ -43,7 +43,7 @@ export async function checkLocation(
 	const pointIndex = parseInt(
 		(await redisClient.hGet(chatId.toString(), 'pointIndex'))!
 	);
-	const route = await Route.findOne({ name: routeName });
+	const route = await Route.findOne({ name: routeName }).polygon('spots');
 	if (!route) {
 		bot.sendMessage(chatId, 'ERROR');
 		return;

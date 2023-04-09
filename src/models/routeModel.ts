@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
 const routeSchema = new mongoose.Schema({
 	name: {
@@ -14,46 +14,7 @@ const routeSchema = new mongoose.Schema({
 		type: String,
 		trim: true,
 	},
-	spots: [
-		{
-			name: {
-				type: String,
-				required: true,
-			},
-			description: {
-				type: String,
-				required: true,
-			},
-			lat: {
-				type: Number,
-				required: true,
-			},
-			lng: {
-				type: Number,
-				required: true,
-			},
-			question: {
-				type: String,
-				required: true,
-			},
-			answer: {
-				type: String,
-				required: true,
-			},
-			points: {
-				type: Number,
-				required: true,
-				min: 0,
-			},
-			url: {
-				type: String,
-				required: true,
-			},
-			audioUrl: {
-				type: String,
-			},
-		},
-	],
+	spots: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Spot' }],
 });
 
 const Route = mongoose.model('Route', routeSchema);
