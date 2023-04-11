@@ -43,6 +43,7 @@ export async function guideRouter(
 			checkAnswer(chatId, bot, routeName, msg.text!);
 			break;
 		default:
+			bot.sendMessage(chatId, 'Я не знаю такой команды');
 			break;
 	}
 }

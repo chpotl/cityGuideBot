@@ -122,7 +122,7 @@ export async function checkAnswer(
 	}
 	console.log(guess, route.spots[pointIndex].answer, pointIndex);
 
-	if (guess === route.spots[pointIndex].answer) {
+	if (guess.toLowerCase() === route.spots[pointIndex].answer.toLowerCase()) {
 		redisClient
 			.multi()
 			.hSet(chatId.toString(), 'state', userState.walking)

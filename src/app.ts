@@ -9,7 +9,7 @@ import { createClient } from 'redis';
 export const redisClient = createClient(); //?????
 redisClient.connect();
 mongoose.set('strictQuery', true);
-mongoose.connect(process.env.DB!).then(() => {
+mongoose.connect(process.env.DB_LOCAL!).then(() => {
 	console.log('connected');
 });
 

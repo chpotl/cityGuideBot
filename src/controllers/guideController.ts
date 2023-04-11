@@ -49,7 +49,6 @@ export async function setRoute(
 ) {
 	const spots = await Route.find({ name: message });
 	if (spots.length) {
-		// console.log('setting ', message);
 		redisClient
 			.multi()
 			.hSet(chatId.toString(), 'state', userState.walking)
