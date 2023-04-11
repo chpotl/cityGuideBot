@@ -25,7 +25,6 @@ bot.setMyCommands([
 ]);
 
 bot.on('message', (msg) => {
-	console.log(msg.text);
-	console.log('cубкультура');
+	// console.log(msg);
 	router(msg, msg.text!, msg.chat.id, bot);
 });

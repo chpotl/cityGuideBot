@@ -71,7 +71,6 @@ async function getPointInfo(chatId: number, bot: TelegramBot, routeName: any) {
 	);
 	const route = await Route.findOne({ name: routeName }).populate('spots');
 	if (route) {
-		// console.log(route.spots[pointIndex].audioUrl);
 		if (route.spots[pointIndex].audioUrl) {
 			console.log(route.spots[pointIndex].audioUrl);
 			bot.sendAudio(
@@ -129,7 +128,6 @@ export async function checkAnswer(
 			.hSet(chatId.toString(), 'state', userState.walking)
 			.hSet(chatId.toString(), 'pointIndex', pointIndex + 1)
 			.exec();
-		console.log('add ', route.spots[pointIndex].points, ' points');
 		await User.updateOne(
 			{
 				chatId: chatId,

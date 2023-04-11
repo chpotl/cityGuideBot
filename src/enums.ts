@@ -11,4 +11,5 @@ export enum adminState {
 	edit_route = 'edit_route',
 	create_spot = 'create_spot',
 	edit_spot = 'edit_spot',
+	upload_audio = 'upload_audio',
 }

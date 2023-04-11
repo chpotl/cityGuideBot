@@ -23,15 +23,20 @@ export async function router(
 		.exec();
 	const user = await User.findOne({ chatId: msg.chat.id });
 
+	if (message == '/start') {
+		startController(chatId, bot, msg);
+		return;
+	}
+	if (user?.role == 'admin') {
+		adminRouter(msg, chatId, bot);
+		return;
+	}
 	switch (message) {
 		case '/state':
 			bot.sendMessage(
 				chatId,
 				`${state}\n${theme}\n${routeName}\n${pointIndex}\n`
 			);
-			break;
-		case '/start':
-			startController(chatId, bot, msg);
 			break;
 		case 'Выбрать маршрут':
 			getTheme(chatId, bot);
@@ -42,9 +47,5 @@ export async function router(
 		default:
 			guideRouter(msg, chatId, bot);
 			break;
-	}
-	if (user?.role == 'admin') {
-		adminRouter(msg, chatId, bot);
-		return;
 	}
 }

@@ -7,10 +7,12 @@ import {
 	editSpotContent,
 	getAllRoutes,
 	getAllSpots,
+	uploadSpotAudio,
 } from '../controllers/adminController';
 import { adminState } from '../enums';
 import Route from '../models/routeModel';
 import Spot from '../models/spotModel';
+import fs from 'fs';
 
 export async function adminRouter(
 	msg: TelegramApi.Message,
@@ -123,6 +125,60 @@ export async function adminRouter(
 			parse_mode: 'HTML',
 		});
 		return;
+	} else if (msg.text?.match(/^\/addaudio/)) {
+		const spotId = msg.text?.match(/\/addaudio(.*)/)![1];
+		const spot = await Spot.findById(spotId);
+		if (!spot) {
+			bot.sendMessage(chatId, 'Такой точки не сущетсвует');
+			return;
+		}
+		await redisClient
+			.multi()
+			.hSet(chatId.toString(), 'adminState', adminState.upload_audio)
+			.hSet(chatId.toString(), 'spotId', spotId)
+			.exec();
+		bot.sendMessage(chatId, 'Отправь мне аудиогид в формате mp3', {
+			parse_mode: 'HTML',
+			reply_markup: {
+				remove_keyboard: true,
+			},
+		});
+		return;
+	} else if (msg.text?.match(/^\/addaudio/)) {
+		const spotId = msg.text?.match(/\/addaudio(.*)/)![1];
+		const spot = await Spot.findById(spotId);
+		if (!spot) {
+			bot.sendMessage(chatId, 'Такой точки не сущетсвует');
+			return;
+		}
+		await redisClient
+			.multi()
+			.hSet(chatId.toString(), 'adminState', adminState.upload_audio)
+			.hSet(chatId.toString(), 'spotId', spotId)
+			.exec();
+		bot.sendMessage(chatId, 'Отправь мне аудиогид в формате mp3', {
+			parse_mode: 'HTML',
+			reply_markup: {
+				remove_keyboard: true,
+			},
+		});
+		return;
+	} else if (msg.text?.match(/^\/deleteaudio/)) {
+		const spotId = msg.text?.match(/\/deleteaudio(.*)/)![1];
+		const spot = await Spot.findById(spotId);
+		if (!spot) {
+			bot.sendMessage(chatId, 'Такой точки не сущетсвует');
+			return;
+		}
+		fs.rm(`./src/view/audio/${spot.audioUrl}`, async (e) => {
+			if (!e) {
+				await Spot.findByIdAndUpdate(spotId, { $unset: { audioUrl: '' } });
+				bot.sendMessage(chatId, 'Аудиогид успешно удален', {});
+			} else {
+				bot.sendMessage(chatId, 'Произошла ошибка, попробуй еще раз', {});
+			}
+		});
+		return;
 	}
 	switch (state) {
 		case adminState.create_route:
@@ -143,7 +199,12 @@ export async function adminRouter(
 			const createSpotId = await redisClient.hGet(chatId.toString(), 'spotId');
 			createSpotContent(chatId, bot, msg.text!, createSpotId!);
 			break;
+		case adminState.upload_audio:
+			const audioSpotId = await redisClient.hGet(chatId.toString(), 'spotId');
+			uploadSpotAudio(chatId, bot, msg, audioSpotId!);
+			break;
 		default:
+			bot.sendMessage(chatId, 'Я не знаю такой команды');
 			break;
 	}
 }

@@ -1,11 +1,12 @@
 //@ts-nocheck
 import TelegramBot from 'node-telegram-bot-api';
 import { redisClient } from '../app';
-import { userState } from '../enums';
 import Route from '../models/routeModel';
-import { adminKeyboard, themeKeyboard } from '../view/keyboard';
-import { getPoint } from './walkController';
+import { adminKeyboard, startKeyboard } from '../view/keyboard';
 import Spot from '../models/spotModel';
+import https from 'https'; // or 'https' for https:// URLs
+import fs from 'fs';
+import { uid } from 'uid';
 
 export async function getAllRoutes(chatId: number, bot: TelegramBot) {
 	const routes = await Route.find();
@@ -49,9 +50,12 @@ export async function getAllSpots(
 		res += `<u>Загадка:</u> ${spot.question}\n`;
 		res += `<u>Правильный ответ:</u> ${spot.answer}\n`;
 		res += `<u>Очки:</u> ${spot.points}\n`;
+		res += `<u>Аудиогид:</u> ${spot.audioUrl ? 'загружен' : 'отсутвует'}\n`;
 		res += `<u>Ссылка на точку:</u> ${spot.url}\n\n`;
 		//@ts-ignore
 		res += `Редкатировать точку:\n/editspot${spot._id}\n`;
+		res += `Загрузить/изменить аудиогид:\n/addaudio${spot._id}\n`;
+		res += `Удалить аудиогид:\n/deleteaudio${spot._id}\n`;
 		res += `Удалить точку:\n/deletespot${spot._id}\n\n`;
 	});
 	bot.sendMessage(chatId, res, { parse_mode: 'HTML' });
@@ -114,7 +118,6 @@ export async function editRoute(
 			}
 		});
 		const newRoute = await Route.findOneAndUpdate({ _id: id }, res);
-		console.log(res);
 		if (newRoute) {
 			bot.sendMessage(
 				chatId,
@@ -186,7 +189,6 @@ export async function editSpotContent(
 			}
 		});
 		const newSpot = await Spot.findOneAndUpdate({ _id: id }, res);
-		console.log(res);
 		if (newSpot) {
 			bot.sendMessage(
 				chatId,
@@ -253,5 +255,43 @@ export async function createSpotContent(
 			chatId,
 			'ERROR\n' + e._message.toString() + '\n\nПопробуй еще раз'
 		);
+	}
+}
+
+export async function uploadSpotAudio(
+	chatId: number,
+	bot: TelegramBot,
+	msg: TelegramApi.Message,
+	id: string
+) {
+	try {
+		const spot = await Spot.findById(id);
+		if (!spot) {
+			bot.sendMessage(chatId, 'Такой точки не сущесвует попробуй еще раз');
+			return;
+		}
+		if (spot.audioUrl) {
+			fs.rm(`./src/view/audio/${spot.audioUrl}`, () => {
+				console.log('File deleted');
+			});
+		}
+		const filelink = await bot.getFileLink(msg.audio.file_id);
+		const fileName = uid(16) + '.mp3';
+		const file = fs.createWriteStream(`./src/view/audio/${fileName}`);
+		const request = https.get(filelink, function (response) {
+			response.pipe(file);
+			file.on('finish', async () => {
+				file.close();
+				await Spot.updateOne({ _id: id }, { $set: { audioUrl: fileName } });
+				console.log('Download Completed');
+			});
+		});
+		bot.sendMessage(chatId, 'Аудиогид успешно загружен', {
+			reply_markup: adminKeyboard,
+		});
+		redisClient.del(chatId.toString());
+	} catch (e) {
+		//@ts-ignore
+		bot.sendMessage(chatId, 'ERROR\n' + e + '\n\nПопробуй еще раз');
 	}
 }

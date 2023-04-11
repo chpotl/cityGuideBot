@@ -21,7 +21,6 @@ export async function setTheme(
 		keyboard: [],
 		resize_keyboard: true,
 	};
-	console.log('хуй');
 	const routes = await Route.find({ theme: message });
 	if (routes.length) {
 		routes.forEach((el) => {
