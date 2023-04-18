@@ -3,3 +3,4 @@ node_modules
 dump.rdb
 *.mp3
 *.png
+.DS_Store

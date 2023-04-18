@@ -18,10 +18,6 @@ bot.setMyCommands([
 		command: '/start',
 		description: 'Запуск бота',
 	},
-	{
-		command: '/state',
-		description: 'вывод состояния в консоль',
-	},
 ]);
 
 bot.on('message', (msg) => {
