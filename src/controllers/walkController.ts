@@ -54,7 +54,7 @@ export async function checkLocation(
 		route.spots[pointIndex].lat,
 		route.spots[pointIndex].lng
 	);
-	if (distance > 10000) {
+	if (distance > process.env.POINT_RADIUS_METERS) {
 		bot.sendMessage(chatId, 'Ты слишком далеко');
 		return;
 	}
